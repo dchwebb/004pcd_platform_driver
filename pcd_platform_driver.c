@@ -248,9 +248,9 @@ int pcd_platform_driver_probe(struct platform_device *pdev) {
 cdev_del:
     cdev_del(&dev_data->cdev);
 buffer_free:
-    kfree(dev_data->buffer);
+    devm_kfree(&pdev->dev, dev_data->buffer);
 dev_data_free:
-    kfree(dev_data);
+    devm_kfree(&pdev->dev, dev_data);
 out:
     pr_info("Device probe failed\n");
 
