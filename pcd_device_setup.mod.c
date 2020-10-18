@@ -24,7 +24,7 @@ __used
 __attribute__((section("__versions"))) = {
 	{ 0xa0a7cae5, __VMLINUX_SYMBOL_STR(module_layout) },
 	{ 0x4b3a7225, __VMLINUX_SYMBOL_STR(platform_device_unregister) },
-	{ 0x48a8b60e, __VMLINUX_SYMBOL_STR(platform_device_register) },
+	{ 0x3862d253, __VMLINUX_SYMBOL_STR(platform_add_devices) },
 	{ 0x2e5810c6, __VMLINUX_SYMBOL_STR(__aeabi_unwind_cpp_pr1) },
 	{ 0x27e1a049, __VMLINUX_SYMBOL_STR(printk) },
 	{ 0xb1ad28e0, __VMLINUX_SYMBOL_STR(__gnu_mcount_nc) },

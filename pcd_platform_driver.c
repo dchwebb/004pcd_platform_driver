@@ -28,6 +28,28 @@ struct pcdrv_private_data
 
 struct pcdrv_private_data pcdrv_data;
 
+struct device_config {
+    int config_item1;
+    int config_item2;
+};
+
+enum pcdev_names {PCDEVA1X, PCDEVB1X, PCDEVC1X, PCDEVD1X};
+
+struct device_config pcdev_config[] = {
+    [PCDEVA1X] = {.config_item1 = 60, .config_item2 = 21},
+    [PCDEVB1X] = {.config_item1 = 50, .config_item2 = 22},
+    [PCDEVC1X] = {.config_item1 = 40, .config_item2 = 23},
+    [PCDEVD1X] = {.config_item1 = 30, .config_item2 = 24}
+};
+
+struct platform_device_id pcdevs_ids[] = {
+    [0] = {.name = "pcdev-A1x", .driver_data = PCDEVA1X},
+    [1] = {.name = "pcdev-B1x", .driver_data = PCDEVB1X},
+    [2] = {.name = "pcdev-C1x", .driver_data = PCDEVC1X},
+    [3] = {.name = "pcdev-D1x", .driver_data = PCDEVD1X},
+    {}
+};
+
 int check_permission(int permission, int access_mode) {
     if (permission == READWRITE)
         return 0;
@@ -169,13 +191,6 @@ int pcd_platform_driver_remove(struct platform_device *pdev) {
     pr_info("cdev del ...\n");
     cdev_del(&dev_data->cdev);
 
-    // Clean up memory
-    pr_info("kfree buffer ...\n");
-    kfree(dev_data->buffer);
-
-    pr_info("kfree dev data ...\n");
-    kfree(dev_data);
-
     pcdrv_data.total_devices--;
 
     pr_info("Device is removed\n");
@@ -210,6 +225,7 @@ int pcd_platform_driver_probe(struct platform_device *pdev) {
     }
     dev_data->pdata = *tmp_pdata;       // Copy temporary platform data into device
     pr_info("Device serial number %s; Permissions: %d; Size: %d\n", dev_data->pdata.serial_number, dev_data->pdata.permission, dev_data->pdata.size);
+    pr_info("Config item 1 = %d\n", pcdev_config[pdev->id_entry->driver_data].config_item1);
 
     // Dynamically allocate memory for the device buffer using size information from the platform data
     dev_data->buffer = devm_kzalloc(&pdev->dev, dev_data->pdata.size, GFP_KERNEL);
@@ -258,9 +274,11 @@ out:
 }
 
 
+
 struct platform_driver pcd_platform_driver = {
     .probe = pcd_platform_driver_probe,
     .remove = pcd_platform_driver_remove,
+    .id_table = pcdevs_ids,
     .driver = {
         .name = "pseudo_char_device"
     }
